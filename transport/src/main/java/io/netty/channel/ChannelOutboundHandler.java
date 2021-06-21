@@ -73,6 +73,7 @@ public interface ChannelOutboundHandler extends ChannelHandler {
 
     /**
      * Intercepts {@link ChannelHandlerContext#read()}.
+     * 从底层读数据：完成Netty通道从Java IO通道的数据读取。
      */
     void read(ChannelHandlerContext ctx) throws Exception;
 
@@ -80,6 +81,8 @@ public interface ChannelOutboundHandler extends ChannelHandler {
     * Called once a write operation is made. The write operation will write the messages through the
      * {@link ChannelPipeline}. Those are then ready to be flushed to the actual {@link Channel} once
      * {@link Channel#flush()} is called
+     * 写数据到底层：完成Netty通道向底层Java IO通道的数据写入操作。
+     * 此方法仅仅是触发一下操作而已，并不是完成实际的数据写入操作。
      *
      * @param ctx               the {@link ChannelHandlerContext} for which the write operation is made
      * @param msg               the message to write

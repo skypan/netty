@@ -23,6 +23,7 @@ public interface ChannelInboundHandler extends ChannelHandler {
 
     /**
      * The {@link Channel} of the {@link ChannelHandlerContext} was registered with its {@link EventLoop}
+     * 当通道注册完成之后会触发此方法
      */
     void channelRegistered(ChannelHandlerContext ctx) throws Exception;
 
@@ -39,6 +40,7 @@ public interface ChannelInboundHandler extends ChannelHandler {
     /**
      * The {@link Channel} of the {@link ChannelHandlerContext} was registered is now inactive and reached its
      * end of lifetime.
+     * 当连接断开或者不可用时，触发此方法
      */
     void channelInactive(ChannelHandlerContext ctx) throws Exception;
 
@@ -68,6 +70,7 @@ public interface ChannelInboundHandler extends ChannelHandler {
 
     /**
      * Gets called if a {@link Throwable} was thrown.
+     * 当通道处理发生异常时，回调此方法
      */
     @Override
     @SuppressWarnings("deprecation")

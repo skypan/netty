@@ -69,9 +69,13 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
      *        the parent of this channel. {@code null} if there's no parent.
      */
     protected AbstractChannel(Channel parent) {
+        // 父通道
+        // 如果是监听连接的通道（如NioServerSocketChannel），parent = null
+        // 如果是监听连接传输的通道（如NioSocketChannel），parent = 监听连接的通道
         this.parent = parent;
         id = newId();
         unsafe = newUnsafe();
+        // 通道流水线，默认DefaultChannelPipeline，内部维护了一个双向链表
         pipeline = newChannelPipeline();
     }
 
@@ -219,11 +223,23 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
         return registered;
     }
 
+    /**
+     * 绑定监听地址
+     * 绑定成功后开始监听客户端的连接
+     * 用于服务端
+     * @param localAddress
+     * @return
+     */
     @Override
     public ChannelFuture bind(SocketAddress localAddress) {
         return pipeline.bind(localAddress);
     }
 
+    /**
+     * 连接远程服务器
+     * @param remoteAddress
+     * @return
+     */
     @Override
     public ChannelFuture connect(SocketAddress remoteAddress) {
         return pipeline.connect(remoteAddress);

@@ -939,6 +939,8 @@ public class DefaultChannelPipeline implements ChannelPipeline {
 
     @Override
     public final ChannelFuture connect(SocketAddress remoteAddress) {
+        // 以tail为基点，找出第一个outhandler
+        // tail -> tail.prev -> ... -> head
         return tail.connect(remoteAddress);
     }
 
@@ -1242,6 +1244,7 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     }
 
     // A special catch-all handler that handles both bytes and messages.
+    // 是一个入站处理器
     final class TailContext extends AbstractChannelHandlerContext implements ChannelInboundHandler {
 
         TailContext(DefaultChannelPipeline pipeline) {
@@ -1302,9 +1305,12 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         }
     }
 
+    // 头部处理器和头部上下文是同一个类
+    // 既是入站处理器，也是出战处理器
     final class HeadContext extends AbstractChannelHandlerContext
             implements ChannelOutboundHandler, ChannelInboundHandler {
 
+        // 传输操作类实例：完成通道的最终输入、输出等操作
         private final Unsafe unsafe;
 
         HeadContext(DefaultChannelPipeline pipeline) {
