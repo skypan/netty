@@ -24,6 +24,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
+/**
+ * 内部数据为一个java数组
+ * 存储在java的堆空间中
+ * 可以通过hasArray来判断是否为堆缓存区
+ * 优点：未使用池化的情况下，能够快速的分配和释放
+ * 缺点：写入底层传输通道之前，会复制数据到直接缓冲区
+ */
 class PooledHeapByteBuf extends PooledByteBuf<byte[]> {
 
     private static final ObjectPool<PooledHeapByteBuf> RECYCLER = ObjectPool.newPool(

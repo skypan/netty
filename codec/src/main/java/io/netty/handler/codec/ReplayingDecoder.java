@@ -270,7 +270,9 @@ public abstract class ReplayingDecoder<S> extends ByteToMessageDecoder {
     static final Signal REPLAY = Signal.valueOf(ReplayingDecoder.class, "REPLAY");
 
     private final ReplayingDecoderByteBuf replayable = new ReplayingDecoderByteBuf();
+    // 用来保存读取数据的中间状态
     private S state;
+    // 读指针检查点保存
     private int checkpoint = -1;
 
     /**

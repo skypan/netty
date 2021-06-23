@@ -61,7 +61,9 @@ import static io.netty.channel.ChannelHandlerMask.mask;
 abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, ResourceLeakHint {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(AbstractChannelHandlerContext.class);
+    // 双向链表的指针，指向前驱
     volatile AbstractChannelHandlerContext next;
+    // 双向链表的指针，指向后驱
     volatile AbstractChannelHandlerContext prev;
 
     private static final AtomicIntegerFieldUpdater<AbstractChannelHandlerContext> HANDLER_STATE_UPDATER =
@@ -92,6 +94,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
 
     // Will be set to null if no child executor should be used, otherwise it will be set to the
     // child executor.
+    // 节点的执行线程
     final EventExecutor executor;
     private ChannelFuture succeededFuture;
 
@@ -123,6 +126,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
 
     @Override
     public ByteBufAllocator alloc() {
+        // 获取通道配置的缓冲区分配器
         return channel().config().getAllocator();
     }
 
@@ -362,11 +366,16 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
         final Object m = next.pipeline.touch(ObjectUtil.checkNotNull(msg, "msg"), next);
         EventExecutor executor = next.executor();
         if (executor.inEventLoop()) {
+            // 如果当前线程(Thread.currentThread)为后继的处理器
+            // 执行后继上下文所包装的处理器
             next.invokeChannelRead(m);
         } else {
+            // 如果当前处理线程不是后继的处理线程，则提交到后继处理线程去排队
+            // 保障该节点的处理器被设置的线程调用，避免发生线程安全问题
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
+                    // 提交到后继处理线程
                     next.invokeChannelRead(m);
                 }
             });

@@ -25,6 +25,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
+/**
+ * 内部数据存储在操作系统的内存空间内
+ * 优点：能获取超过java堆限制大小的内存空间；写入传输通道比堆缓冲区更快
+ * 缺点：释放和分配昂贵（使用了操作系统的方法）；在java中读取数据时，需要复制一次到堆上
+ */
 final class PooledDirectByteBuf extends PooledByteBuf<ByteBuffer> {
 
     private static final ObjectPool<PooledDirectByteBuf> RECYCLER = ObjectPool.newPool(

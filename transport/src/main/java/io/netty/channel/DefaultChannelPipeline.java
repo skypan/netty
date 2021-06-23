@@ -1178,6 +1178,8 @@ public class DefaultChannelPipeline implements ChannelPipeline {
      * Called once a message hit the end of the {@link ChannelPipeline} without been handled by the user
      * in {@link ChannelInboundHandler#channelRead(ChannelHandlerContext, Object)}. This method is responsible
      * to call {@link ReferenceCountUtil#release(Object)} on the given msg at some point.
+     *
+     * 入站消息未处理或者来到了流水线的末尾，释放缓冲区
      */
     protected void onUnhandledInboundMessage(Object msg) {
         try {
@@ -1363,8 +1365,10 @@ public class DefaultChannelPipeline implements ChannelPipeline {
             unsafe.deregister(promise);
         }
 
+        // 出站处理举例：出站（从Handler到Channel）读取传输数据
         @Override
         public void read(ChannelHandlerContext ctx) {
+            // 读就绪
             unsafe.beginRead();
         }
 

@@ -23,6 +23,7 @@ import java.nio.ByteBuffer;
 
 /**
  * Simplistic {@link ByteBufAllocator} implementation that does not pool anything.
+ * 普通的未池化Bytebuf分配器
  */
 public final class UnpooledByteBufAllocator extends AbstractByteBufAllocator implements ByteBufAllocatorMetricProvider {
 

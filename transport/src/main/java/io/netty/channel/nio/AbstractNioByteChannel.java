@@ -139,7 +139,9 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
                 return;
             }
             final ChannelPipeline pipeline = pipeline();
+            // 获取通道的缓冲区分配器
             final ByteBufAllocator allocator = config.getAllocator();
+            // 缓冲区分配时大小推测与计算组件
             final RecvByteBufAllocator.Handle allocHandle = recvBufAllocHandle();
             allocHandle.reset(config);
 
@@ -147,6 +149,7 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
             boolean close = false;
             try {
                 do {
+                    // 由分配器按照计算好的大小分配缓冲区
                     byteBuf = allocHandle.allocate(allocator);
                     allocHandle.lastBytesRead(doReadBytes(byteBuf));
                     if (allocHandle.lastBytesRead() <= 0) {
@@ -216,10 +219,12 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
         if (msg instanceof ByteBuf) {
             ByteBuf buf = (ByteBuf) msg;
             if (!buf.isReadable()) {
+                // 引用计数减0，释放缓冲区
                 in.remove();
                 return 0;
             }
 
+            // 发送缓冲区的数据到JAVA NIO通道
             final int localFlushedAmount = doWriteBytes(buf);
             if (localFlushedAmount > 0) {
                 in.progress(localFlushedAmount);
@@ -253,6 +258,7 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
     @Override
     protected void doWrite(ChannelOutboundBuffer in) throws Exception {
         int writeSpinCount = config().getWriteSpinCount();
+        // 发送缓冲区数据，直到缓冲区数据发送完毕
         do {
             Object msg = in.current();
             if (msg == null) {

@@ -35,6 +35,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 池化的ByteBuf分配器
+ */
 public class PooledByteBufAllocator extends AbstractByteBufAllocator implements ByteBufAllocatorMetricProvider {
 
     private static final InternalLogger logger = InternalLoggerFactory.getInstance(PooledByteBufAllocator.class);
