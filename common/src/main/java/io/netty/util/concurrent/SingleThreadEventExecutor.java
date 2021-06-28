@@ -76,6 +76,11 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
 
     private final Queue<Runnable> taskQueue;
 
+    /**
+     * 用于轮询NIO Selector 并处理IO事件
+     * 处理其他非IO任务
+     * 什么时候启动 ？ 一般在 Channel在selector注册之前
+     */
     private volatile Thread thread;
     @SuppressWarnings("unused")
     private volatile ThreadProperties threadProperties;
@@ -823,7 +828,9 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
     private void execute(Runnable task, boolean immediate) {
         boolean inEventLoop = inEventLoop();
         addTask(task);
+        // 如果eventLoop线程没有启动
         if (!inEventLoop) {
+            // 启动轮询线程
             startThread();
             if (isShutdown()) {
                 boolean reject = false;
@@ -972,9 +979,11 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
 
     private void doStartThread() {
         assert thread == null;
+        // 线程工厂 ？ 每个任务一个线程 ？
         executor.execute(new Runnable() {
             @Override
             public void run() {
+                // 当前线程作为eventLoop线程
                 thread = Thread.currentThread();
                 if (interrupted) {
                     thread.interrupt();
@@ -983,6 +992,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
                 boolean success = false;
                 updateLastExecutionTime();
                 try {
+                    // 执行轮询事件的业务方法，进入死循环
                     SingleThreadEventExecutor.this.run();
                     success = true;
                 } catch (Throwable t) {

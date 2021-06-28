@@ -492,9 +492,12 @@ public abstract class AbstractChannel extends DefaultAttributeMap implements Cha
 
             AbstractChannel.this.eventLoop = eventLoop;
 
+            // eventLoop线程已经启动 并且 等于当前线程
             if (eventLoop.inEventLoop()) {
+                // 调用AbstractNioChannel.register方法注册通道
                 register0(promise);
             } else {
+                // eventLoop线程还有没有启动，就提交一个任务
                 try {
                     eventLoop.execute(new Runnable() {
                         @Override

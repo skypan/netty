@@ -50,6 +50,9 @@ public abstract class AbstractNioChannel extends AbstractChannel {
     private static final InternalLogger logger =
             InternalLoggerFactory.getInstance(AbstractNioChannel.class);
 
+    /**
+     * NIO 原生Channel
+     */
     private final SelectableChannel ch;
     protected final int readInterestOp;
     volatile SelectionKey selectionKey;
@@ -372,11 +375,16 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         return loop instanceof NioEventLoop;
     }
 
+    /**
+     * 通道注册
+     * @throws Exception
+     */
     @Override
     protected void doRegister() throws Exception {
         boolean selected = false;
         for (;;) {
             try {
+                // this当前对象作为attachment绑定到selectionKey上
                 selectionKey = javaChannel().register(eventLoop().unwrappedSelector(), 0, this);
                 return;
             } catch (CancelledKeyException e) {

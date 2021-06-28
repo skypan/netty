@@ -110,6 +110,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
 
     /**
      * The NIO {@link Selector}.
+     * 原生NIO的Selector
      */
     private Selector selector;
     private Selector unwrappedSelector;

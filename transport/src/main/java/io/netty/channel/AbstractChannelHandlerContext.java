@@ -793,6 +793,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
         final AbstractChannelHandlerContext next = findContextOutbound(flush ?
                 (MASK_WRITE | MASK_FLUSH) : MASK_WRITE);
         final Object m = pipeline.touch(msg, next);
+        // executor == NioEventLoop
         EventExecutor executor = next.executor();
         if (executor.inEventLoop()) {
             if (flush) {
