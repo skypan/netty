@@ -132,6 +132,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
 
     @Override
     public EventExecutor executor() {
+        // 如果没有指定，就用channel绑定的executor
         if (executor == null) {
             return channel().eventLoop();
         } else {
@@ -793,7 +794,8 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
         final AbstractChannelHandlerContext next = findContextOutbound(flush ?
                 (MASK_WRITE | MASK_FLUSH) : MASK_WRITE);
         final Object m = pipeline.touch(msg, next);
-        // executor == NioEventLoop
+        // executor的类型 是 NioEventLoop
+        // 当前handler的线程可能是自己指定的
         EventExecutor executor = next.executor();
         if (executor.inEventLoop()) {
             if (flush) {
@@ -802,6 +804,7 @@ abstract class AbstractChannelHandlerContext implements ChannelHandlerContext, R
                 next.invokeWrite(m, promise);
             }
         } else {
+            // 如果有自己的线程组，就创建一个任务 提交给自己指定的 线程组去执行
             final WriteTask task = WriteTask.newInstance(next, m, promise, flush);
             if (!safeExecute(executor, task, promise, m, !flush)) {
                 // We failed to submit the WriteTask. We need to cancel it so we decrement the pending bytes

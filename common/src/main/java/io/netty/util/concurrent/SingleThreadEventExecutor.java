@@ -74,6 +74,14 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
             AtomicReferenceFieldUpdater.newUpdater(
                     SingleThreadEventExecutor.class, ThreadProperties.class, "threadProperties");
 
+    /**
+     * 任务队列
+     * 添加任务的场景：
+     *      1. 添加普通任务
+     *      2. 添加定时任务：从scheduledTaskQueue队列取出即将要跑的任务，添加到此队列
+     *      3. 非Reactor线程添加的任务
+     * 采用MPSC：多生产者单消费者方式
+     */
     private final Queue<Runnable> taskQueue;
 
     /**
@@ -122,6 +130,8 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
      *
      * @param parent            the {@link EventExecutorGroup} which is the parent of this instance and belongs to it
      * @param threadFactory     the {@link ThreadFactory} which will be used for the used {@link Thread}
+     *                          线程工厂
+     *                          ThreadPerTaskExecutor   每个任务一个线程
      * @param addTaskWakesUp    {@code true} if and only if invocation of {@link #addTask(Runnable)} will wake up the
      *                          executor thread
      * @param maxPendingTasks   the maximum number of pending tasks before new tasks will be rejected.
@@ -342,6 +352,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
     /**
      * Add a task to the task queue, or throws a {@link RejectedExecutionException} if this instance was shutdown
      * before.
+     * 添加任务
      */
     protected void addTask(Runnable task) {
         ObjectUtil.checkNotNull(task, "task");
@@ -977,6 +988,9 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
         return false;
     }
 
+    /**
+     * 启动NioEventLoop 线程
+     */
     private void doStartThread() {
         assert thread == null;
         // 线程工厂 ？ 每个任务一个线程 ？

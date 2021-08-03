@@ -90,6 +90,7 @@ public class ChannelInboundHandlerAdapter extends ChannelHandlerAdapter implemen
     @Skip
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        // TODO 将消息往下传递
         ctx.fireChannelRead(msg);
     }
 

@@ -370,6 +370,12 @@ public class DefaultChannelPipeline implements ChannelPipeline {
         return addLast(null, handlers);
     }
 
+    /**
+     * executor 额外的线程组
+     * @param executor
+     * @param handlers  the handlers to insert last
+     * @return
+     */
     @Override
     public final ChannelPipeline addLast(EventExecutorGroup executor, ChannelHandler... handlers) {
         ObjectUtil.checkNotNull(handlers, "handlers");

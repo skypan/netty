@@ -100,6 +100,7 @@ public abstract class MessageToMessageDecoder<I> extends ChannelInboundHandlerAd
             try {
                 int size = out.size();
                 for (int i = 0; i < size; i++) {
+                    // TODO 将out列表中的内容挨个往下传递
                     ctx.fireChannelRead(out.getUnsafe(i));
                 }
             } finally {
